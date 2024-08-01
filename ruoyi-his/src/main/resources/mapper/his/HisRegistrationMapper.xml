@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.his.mapper.HisRegistrationMapper">
+    
+    <resultMap type="HisRegistration" id="HisRegistrationResult">
+        <result property="registrationId"    column="registration_id"    />
+        <result property="registrationPatientId"    column="registration_patient_id"    />
+        <result property="registrationSchedule"    column="registration_schedule"    />
+        <result property="registrationNo"    column="registration_no"    />
+        <result property="registrationType"    column="registration_type"    />
+        <result property="registrationStatus"    column="registration_status"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectHisRegistrationVo">
+        select registration_id, registration_patient_id, registration_schedule, registration_no, registration_type, registration_status, create_by, create_time, update_by, update_time, remark from his_registration
+    </sql>
+
+<!--    <select id="selectHisRegistrationList" parameterType="HisRegistration" resultMap="HisRegistrationResult">-->
+<!--        <include refid="selectHisRegistrationVo"/>-->
+<!--        <where>  -->
+<!--            <if test="registrationPatientId != null "> and registration_patient_id = #{registrationPatientId}</if>-->
+<!--            <if test="registrationSchedule != null "> and registration_schedule = #{registrationSchedule}</if>-->
+<!--            <if test="registrationNo != null  and registrationNo != ''"> and registration_no = #{registrationNo}</if>-->
+<!--            <if test="registrationType != null "> and registration_type = #{registrationType}</if>-->
+<!--            <if test="registrationStatus != null  and registrationStatus != ''"> and registration_status = #{registrationStatus}</if>-->
+<!--        </where>-->
+<!--    </select>-->
+    
+    <select id="selectHisRegistrationByRegistrationId" parameterType="Long" resultMap="HisRegistrationResult">
+        <include refid="selectHisRegistrationVo"/>
+        where registration_id = #{registrationId}
+    </select>
+
+
+    <resultMap type="VoReg" id="VRegPatientSchedResult">
+        <result property="scheduleDate"    column="schedule_date"    />
+        <result property="scheduleTime"    column="schedule_time"    />
+        <result property="scheduleType"    column="schedule_type"    />
+        <result property="doctName"    column="doct_name"    />
+        <result property="deptName"    column="dept_name"    />
+        <result property="regPrice"    column="reg_price"    />
+        <result property="registrationId"    column="registration_id"    />
+        <result property="registrationStatus"    column="registration_status"    />
+        <result property="patientName"    column="patient_name"    />
+        <result property="patientId"    column="patient_id"    />
+        <result property="scheduleDocterId"    column="schedule_docter_id"    />
+    </resultMap>
+
+    <sql id="selectVRegPatientSchedVo">
+        select schedule_date, schedule_time, schedule_type, doct_name, dept_name, reg_price, registration_id, registration_status, patient_name from v_reg_patient_sched
+    </sql>
+
+    <select id="selectHisRegistrationList" parameterType="VoReg" resultMap="VRegPatientSchedResult">
+        <include refid="selectVRegPatientSchedVo"/>
+        <where>
+            <if test="scheduleDate != null "> and schedule_date = #{scheduleDate}</if>
+            <if test="scheduleTime != null "> and schedule_time = #{scheduleTime}</if>
+            <if test="scheduleType != null  and scheduleType != ''"> and schedule_type = #{scheduleType}</if>
+            <if test="doctName != null  and doctName != ''"> and doct_name like concat('%', #{doctName}, '%')</if>
+            <if test="deptName != null  and deptName != ''"> and dept_name = #{deptName}</if>
+            <if test="regPrice != null "> and reg_price = #{regPrice}</if>
+            <if test="registrationId != null "> and registration_id = #{registrationId}</if>
+            <if test="registrationStatus != null  and registrationStatus != ''"> and registration_status = #{registrationStatus}</if>
+            <if test="patientName != null  and patientName != ''"> and patient_name like concat('%', #{patientName}, '%')</if>
+            <if test="patientId != null "> and patient_id = #{patientId}</if>
+            <if test="scheduleDocterId != null "> and schedule_docter_id = #{scheduleDocterId}</if>
+        </where>
+    </select>
+
+    <update id="updateHisRegistration" parameterType="VoReg">
+        update v_reg_patient_sched
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="registrationStatus != null and registrationStatus != ''">registration_status = #{registrationStatus},</if>
+        </trim>
+        where registration_id = #{registrationId}
+    </update>
+
+    <insert id="insertHisRegistration" parameterType="HisRegistration" useGeneratedKeys="true" keyProperty="registrationId">
+        insert into his_registration
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="registrationPatientId != null">registration_patient_id,</if>
+            <if test="registrationSchedule != null">registration_schedule,</if>
+            <if test="registrationNo != null and registrationNo != ''">registration_no,</if>
+            <if test="registrationType != null">registration_type,</if>
+            <if test="registrationStatus != null and registrationStatus != ''">registration_status,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="registrationPatientId != null">#{registrationPatientId},</if>
+            <if test="registrationSchedule != null">#{registrationSchedule},</if>
+            <if test="registrationNo != null and registrationNo != ''">#{registrationNo},</if>
+            <if test="registrationType != null">#{registrationType},</if>
+            <if test="registrationStatus != null and registrationStatus != ''">#{registrationStatus},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+<!--    <update id="updateHisRegistration" parameterType="HisRegistration">-->
+<!--        update his_registration-->
+<!--        <trim prefix="SET" suffixOverrides=",">-->
+<!--            <if test="registrationPatientId != null">registration_patient_id = #{registrationPatientId},</if>-->
+<!--            <if test="registrationSchedule != null">registration_schedule = #{registrationSchedule},</if>-->
+<!--            <if test="registrationNo != null and registrationNo != ''">registration_no = #{registrationNo},</if>-->
+<!--            <if test="registrationType != null">registration_type = #{registrationType},</if>-->
+<!--            <if test="registrationStatus != null and registrationStatus != ''">registration_status = #{registrationStatus},</if>-->
+<!--            <if test="createBy != null">create_by = #{createBy},</if>-->
+<!--            <if test="createTime != null">create_time = #{createTime},</if>-->
+<!--            <if test="updateBy != null">update_by = #{updateBy},</if>-->
+<!--            <if test="updateTime != null">update_time = #{updateTime},</if>-->
+<!--            <if test="remark != null">remark = #{remark},</if>-->
+<!--        </trim>-->
+<!--        where registration_id = #{registrationId}-->
+<!--    </update>-->
+
+    <delete id="deleteHisRegistrationByRegistrationId" parameterType="Long">
+        delete from his_registration where registration_id = #{registrationId}
+    </delete>
+
+    <delete id="deleteHisRegistrationByRegistrationIds" parameterType="String">
+        delete from his_registration where registration_id in 
+        <foreach item="registrationId" collection="array" open="(" separator="," close=")">
+            #{registrationId}
+        </foreach>
+    </delete>
+</mapper>

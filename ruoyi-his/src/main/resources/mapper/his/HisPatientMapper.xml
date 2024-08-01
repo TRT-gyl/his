@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.his.mapper.HisPatientMapper">
+
+    <resultMap type="HisPatient" id="HisPatientResult">
+        <result property="patientId"    column="patient_id"    />
+        <result property="patientName"    column="patient_name"    />
+        <result property="tel"    column="tel"    />
+        <result property="idCard"    column="id_card"    />
+        <result property="age"    column="age"    />
+        <result property="gender"    column="gender"    />
+        <result property="address"    column="address"    />
+        <result property="patientDate"    column="patient_date"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectHisPatientVo">
+        select patient_id, patient_name, tel, id_card, age, gender, address, patient_date, allergy, del_flag, create_by, create_time, update_by, update_time, remark from his_patient
+    </sql>
+
+
+    <select id="selectHisPatientList" parameterType="HisPatient" resultMap="HisPatientResult">
+        <include refid="selectHisPatientVo"/>
+        <where>
+            <if test="patientName != null  and patientName != ''"> and patient_name like concat('%', #{patientName}, '%')</if>
+            <if test="tel != null  and tel != ''"> and tel = #{tel}</if>
+            <if test="idCard != null  and idCard != ''"> and id_card = #{idCard}</if>
+            <if test="age != null  and age != ''"> and age = #{age}</if>
+            <if test="gender != null  and gender != ''"> and gender = #{gender}</if>
+            <if test="address != null  and address != ''"> and address = #{address}</if>
+            <if test="patientDate != null "> and patient_date = #{patientDate}</if>
+        </where>
+    </select>
+
+    <select id="selectHisPatientByPatientId" parameterType="Long" resultMap="HisPatientResult">
+        <include refid="selectHisPatientVo"/>
+        where patient_id = #{patientId}
+    </select>
+
+    <select id="selectHisPatientByIdCard" parameterType="String" resultMap="HisPatientResult">
+        <include refid="selectHisPatientVo"/>
+        where id_card = #{idCard}
+    </select>
+
+    <insert id="insertHisPatient" parameterType="HisPatient" useGeneratedKeys="true" keyProperty="patientId" keyColumn="patient_id">
+        insert into his_patient
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="patientName != null and patientName != ''">patient_name,</if>
+            <if test="tel != null and tel != ''">tel,</if>
+            <if test="idCard != null and idCard != ''">id_card,</if>
+            <if test="age != null">age,</if>
+            <if test="gender != null">gender,</if>
+            <if test="address != null">address,</if>
+            <if test="patientDate != null">patient_date,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="patientName != null and patientName != ''">#{patientName},</if>
+            <if test="tel != null and tel != ''">#{tel},</if>
+            <if test="idCard != null and idCard != ''">#{idCard},</if>
+            <if test="age != null">#{age},</if>
+            <if test="gender != null">#{gender},</if>
+            <if test="address != null">#{address},</if>
+            <if test="patientDate != null">#{patientDate},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateHisPatient" parameterType="HisPatient">
+        update his_patient
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="patientName != null and patientName != ''">patient_name = #{patientName},</if>
+            <if test="tel != null and tel != ''">tel = #{tel},</if>
+            <if test="idCard != null and idCard != ''">id_card = #{idCard},</if>
+            <if test="age != null">age = #{age},</if>
+            <if test="gender != null">gender = #{gender},</if>
+            <if test="address != null">address = #{address},</if>
+            <if test="patientDate != null">patient_date = #{patientDate},</if>
+            <if test="allergy != null">allergy = #{allergy},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where patient_id = #{patientId}
+    </update>
+
+    <delete id="deleteHisPatientByPatientId" parameterType="Long">
+        delete from his_patient where patient_id = #{patientId}
+    </delete>
+
+    <delete id="deleteHisPatientByPatientIds" parameterType="String">
+        delete from his_patient where patient_id in
+        <foreach item="patientId" collection="array" open="(" separator="," close=")">
+            #{patientId}
+        </foreach>
+    </delete>
+</mapper>

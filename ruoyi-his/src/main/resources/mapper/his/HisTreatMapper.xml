@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.his.mapper.HisTreatMapper">
+
+    <resultMap type="HisTreat" id="HisTreatResult">
+        <result property="treatId"    column="treat_id"    />
+        <result property="treatRegistrationId"    column="treat_registration_id"    />
+        <result property="treatNo"    column="treat_no"    />
+        <result property="treatDate"    column="treat_date"    />
+        <result property="treatContagion"    column="treat_contagion"    />
+        <result property="treatComplaint"    column="treat_complaint"    />
+        <result property="treatInfo"    column="treat_info"    />
+        <result property="treatAdvice"    column="treat_advice"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectHisTreatVo">
+        select treat_id, treat_registration_id, treat_no, treat_date, treat_contagion, treat_complaint, treat_info, treat_advice, del_flag, create_by, create_time, update_by, update_time, remark from his_treat
+    </sql>
+
+    <select id="selectHisTreatList" parameterType="HisTreat" resultMap="HisTreatResult">
+        <include refid="selectHisTreatVo"/>
+        <where>  
+            <if test="treatRegistrationId != null "> and treat_registration_id = #{treatRegistrationId}</if>
+            <if test="treatNo != null  and treatNo != ''"> and treat_no = #{treatNo}</if>
+            <if test="treatDate != null "> and treat_date = #{treatDate}</if>
+            <if test="treatContagion != null  and treatContagion != ''"> and treat_contagion = #{treatContagion}</if>
+            <if test="treatComplaint != null  and treatComplaint != ''"> and treat_complaint = #{treatComplaint}</if>
+            <if test="treatInfo != null  and treatInfo != ''"> and treat_info = #{treatInfo}</if>
+            <if test="treatAdvice != null  and treatAdvice != ''"> and treat_advice = #{treatAdvice}</if>
+        </where>
+    </select>
+    
+    <select id="selectHisTreatByTreatNo" parameterType="String" resultMap="HisTreatResult">
+        <include refid="selectHisTreatVo"/>
+        where treat_no = #{treatNo}
+    </select>
+
+    <!--根据挂号Id查询-->
+    <select id="selectHisTreatByRegistrationId" parameterType="Long" resultMap="HisTreatResult">
+        <include refid="selectHisTreatVo"/>
+        where treat_registration_id = #{treatRegistrationId}
+    </select>
+
+    <insert id="insertHisTreat" parameterType="HisTreat" useGeneratedKeys="true" keyProperty="treatId">
+        insert into his_treat
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="treatRegistrationId != null">treat_registration_id,</if>
+            <if test="treatNo != null and treatNo != ''">treat_no,</if>
+            <if test="treatDate != null">treat_date,</if>
+            <if test="treatContagion != null and treatContagion != ''">treat_contagion,</if>
+            <if test="treatComplaint != null and treatComplaint != ''">treat_complaint,</if>
+            <if test="treatInfo != null and treatInfo != ''">treat_info,</if>
+            <if test="treatAdvice != null and treatAdvice != ''">treat_advice,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="treatRegistrationId != null">#{treatRegistrationId},</if>
+            <if test="treatNo != null and treatNo != ''">#{treatNo},</if>
+            <if test="treatDate != null">#{treatDate},</if>
+            <if test="treatContagion != null and treatContagion != ''">#{treatContagion},</if>
+            <if test="treatComplaint != null and treatComplaint != ''">#{treatComplaint},</if>
+            <if test="treatInfo != null and treatInfo != ''">#{treatInfo},</if>
+            <if test="treatAdvice != null and treatAdvice != ''">#{treatAdvice},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateHisTreat" parameterType="HisTreat">
+        update his_treat
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="treatRegistrationId != null">treat_registration_id = #{treatRegistrationId},</if>
+            <if test="treatDate != null">treat_date = #{treatDate},</if>
+            <if test="treatContagion != null and treatContagion != ''">treat_contagion = #{treatContagion},</if>
+            <if test="treatComplaint != null and treatComplaint != ''">treat_complaint = #{treatComplaint},</if>
+            <if test="treatInfo != null and treatInfo != ''">treat_info = #{treatInfo},</if>
+            <if test="treatAdvice != null and treatAdvice != ''">treat_advice = #{treatAdvice},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where treat_no = #{treatNo}
+    </update>
+
+    <delete id="deleteHisTreatByTreatId" parameterType="Long">
+        delete from his_treat where treat_id = #{treatId}
+    </delete>
+
+    <delete id="deleteHisTreatByTreatIds" parameterType="String">
+        delete from his_treat where treat_id in 
+        <foreach item="treatId" collection="array" open="(" separator="," close=")">
+            #{treatId}
+        </foreach>
+    </delete>
+</mapper>

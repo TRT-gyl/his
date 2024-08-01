@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.his.mapper.HisPrescriptionMapper">
+    
+    <resultMap type="HisPrescription" id="HisPrescriptionResult">
+        <result property="prescriptionId"    column="prescription_id"    />
+        <result property="medicineId"    column="medicine_id"    />
+        <result property="quantity"    column="quantity"    />
+        <result property="amount"    column="amount"    />
+        <result property="treatId"    column="treat_id"    />
+        <result property="notes"    column="notes"    />
+        <result property="state"    column="state"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectHisPrescriptionVo">
+        select prescription_id, medicine_id, quantity, amount, treat_id, notes, state, del_flag, create_by, create_time, update_by, update_time, remark from his_prescription
+    </sql>
+
+    <select id="selectHisPrescriptionList" parameterType="HisPrescription" resultMap="HisPrescriptionResult">
+        <include refid="selectHisPrescriptionVo"/>
+        <where>  
+            <if test="medicineId != null "> and medicine_id = #{medicineId}</if>
+            <if test="quantity != null "> and quantity = #{quantity}</if>
+            <if test="amount != null "> and amount = #{amount}</if>
+            <if test="treatId != null "> and treat_id = #{treatId}</if>
+            <if test="notes != null  and notes != ''"> and notes = #{notes}</if>
+            <if test="state != null  and state != ''"> and state = #{state}</if>
+        </where>
+    </select>
+    
+    <select id="selectHisPrescriptionByPrescriptionId" parameterType="Long" resultMap="HisPrescriptionResult">
+        <include refid="selectHisPrescriptionVo"/>
+        where prescription_id = #{prescriptionId}
+    </select>
+        
+    <insert id="insertHisPrescription" parameterType="HisPrescription" useGeneratedKeys="true" keyProperty="prescriptionId">
+        insert into his_prescription
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="medicineId != null">medicine_id,</if>
+            <if test="quantity != null">quantity,</if>
+            <if test="amount != null">amount,</if>
+            <if test="treatId != null">treat_id,</if>
+            <if test="notes != null">notes,</if>
+            <if test="state != null and state != ''">state,</if>
+            <if test="delFlag != null and delFlag != ''">del_flag,</if>
+            <if test="createBy != null and createBy != ''">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="medicineId != null">#{medicineId},</if>
+            <if test="quantity != null">#{quantity},</if>
+            <if test="amount != null">#{amount},</if>
+            <if test="treatId != null">#{treatId},</if>
+            <if test="notes != null">#{notes},</if>
+            <if test="state != null and state != ''">#{state},</if>
+            <if test="delFlag != null and delFlag != ''">#{delFlag},</if>
+            <if test="createBy != null and createBy != ''">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateHisPrescription" parameterType="HisPrescription">
+        update his_prescription
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="medicineId != null">medicine_id = #{medicineId},</if>
+            <if test="quantity != null">quantity = #{quantity},</if>
+            <if test="amount != null">amount = #{amount},</if>
+            <if test="treatId != null">treat_id = #{treatId},</if>
+            <if test="notes != null">notes = #{notes},</if>
+            <if test="state != null and state != ''">state = #{state},</if>
+            <if test="delFlag != null and delFlag != ''">del_flag = #{delFlag},</if>
+            <if test="createBy != null and createBy != ''">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where prescription_id = #{prescriptionId}
+    </update>
+
+    <delete id="deleteHisPrescriptionByPrescriptionId" parameterType="Long">
+        delete from his_prescription where prescription_id = #{prescriptionId}
+    </delete>
+
+    <delete id="deleteHisPrescriptionByPrescriptionIds" parameterType="String">
+        delete from his_prescription where prescription_id in 
+        <foreach item="prescriptionId" collection="array" open="(" separator="," close=")">
+            #{prescriptionId}
+        </foreach>
+    </delete>
+</mapper>

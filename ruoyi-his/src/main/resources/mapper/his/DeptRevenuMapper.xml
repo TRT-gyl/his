@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.his.mapper.DeptRevenuMapper">
+    
+    <resultMap type="DeptRevenu" id="DeptRevenuResult">
+        <result property="deptId"    column="dept_id"    />
+        <result property="deptName"    column="dept_name"    />
+        <result property="regRevenu"    column="reg_revenu"    />
+        <result property="medicineRevenu"    column="medicine_revenu"    />
+        <result property="examineRevenu"    column="examine_revenu"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectDeptRevenuVo">
+        select dept_id, dept_name, reg_revenu, medicine_revenu, examine_revenu, create_time from dept_revenu
+    </sql>
+
+    <select id="selectDeptRevenuInPeriod"  resultMap="DeptRevenuResult">
+        select dept_id, dept_name, sum(reg_revenu) reg_revenu ,sum(medicine_revenu) medicine_revenu, sum(examine_revenu) examine_revenu from dept_revenu
+        <where>
+            <if test="startDate != null and startDate != ''"><!-- 开始时间检索 -->
+                and date_format(dept_revenu.create_time,'%y%m%d') &gt;= date_format(#{startDate},'%y%m%d')
+            </if>
+            <if test="endDate != null and endDate != ''"><!-- 结束时间检索 -->
+                and date_format(dept_revenu.create_time,'%y%m%d') &lt;= date_format(#{endDate},'%y%m%d')
+            </if>
+        </where>
+        group by dept_id
+    </select>
+
+    <select id="selectDeptRevenuList" parameterType="DeptRevenu" resultMap="DeptRevenuResult">
+        <include refid="selectDeptRevenuVo"/>
+        <where>  
+            <if test="deptId != null "> and dept_id = #{deptId}</if>
+            <if test="deptName != null  and deptName != ''"> and dept_name like concat('%', #{deptName}, '%')</if>
+            <if test="regRevenu != null "> and reg_revenu = #{regRevenu}</if>
+            <if test="medicineRevenu != null "> and medicine_revenu = #{medicineRevenu}</if>
+            <if test="examineRevenu != null "> and examine_revenu = #{examineRevenu}</if>
+        </where>
+    </select>
+    
+    <select id="selectDeptRevenuByDeptId" parameterType="Long" resultMap="DeptRevenuResult">
+        <include refid="selectDeptRevenuVo"/>
+        where dept_id = #{deptId}
+    </select>
+        
+    <insert id="insertDeptRevenu" parameterType="DeptRevenu">
+        insert into dept_revenu
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="deptId != null">dept_id,</if>
+            <if test="deptName != null">dept_name,</if>
+            <if test="regRevenu != null">reg_revenu,</if>
+            <if test="medicineRevenu != null">medicine_revenu,</if>
+            <if test="examineRevenu != null">examine_revenu,</if>
+            <if test="createTime != null">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="deptId != null">#{deptId},</if>
+            <if test="deptName != null">#{deptName},</if>
+            <if test="regRevenu != null">#{regRevenu},</if>
+            <if test="medicineRevenu != null">#{medicineRevenu},</if>
+            <if test="examineRevenu != null">#{examineRevenu},</if>
+            <if test="createTime != null">#{createTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateDeptRevenu" parameterType="DeptRevenu">
+        update dept_revenu
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="deptName != null">dept_name = #{deptName},</if>
+            <if test="regRevenu != null">reg_revenu = #{regRevenu},</if>
+            <if test="medicineRevenu != null">medicine_revenu = #{medicineRevenu},</if>
+            <if test="examineRevenu != null">examine_revenu = #{examineRevenu},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where dept_id = #{deptId}
+    </update>
+
+    <delete id="deleteDeptRevenuByDeptId" parameterType="Long">
+        delete from dept_revenu where dept_id = #{deptId}
+    </delete>
+
+    <delete id="deleteDeptRevenuByDeptIds" parameterType="String">
+        delete from dept_revenu where dept_id in 
+        <foreach item="deptId" collection="array" open="(" separator="," close=")">
+            #{deptId}
+        </foreach>
+    </delete>
+</mapper>

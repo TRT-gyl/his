@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.his.mapper.HisPurchasWarehousingMapper">
+
+    <resultMap type="HisPurchasWarehousing" id="HisPurchasWarehousingResult">
+        <result property="id"    column="id"    />
+        <result property="billsid"    column="billsID"    />
+        <result property="suppliersId"    column="suppliers_id"    />
+        <result property="totalMoney"    column="total_money"    />
+        <result property="status"    column="status"    />
+        <result property="proposer"    column="proposer"    />
+        <result property="operator"    column="operator"    />
+        <result property="storageTime"    column="storage_time"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <association property="hisSupplier" column="suppliers_id" javaType="HisSupplier" resultMap="HisSupplierResult"/>
+    </resultMap>
+    <resultMap id="HisSupplierResult" type="HisSupplier">
+        <id property="suppliers_id" column="supplier_id"></id>
+        <result property="supplierName" column="supplier_name"></result>
+    </resultMap>
+
+    <sql id="selectHisPurchasWarehousingVo">
+        select id, billsID, suppliers_id, total_money, status, proposer, operator, storage_time, create_by, create_time, update_by, update_time, remark from his_purchas_warehousing
+    </sql>
+
+    <select id="selectHisPurchasWarehousingList" parameterType="HisPurchasWarehousing" resultMap="HisPurchasWarehousingResult">
+        select pw.*,hs.supplier_name from his_purchas_warehousing pw,his_supplier hs
+        <where>
+            <if test="billsid != null  and billsid != ''"> and pw.billsID = #{billsid}</if>
+            <if test="suppliersId != null "> and pw.suppliers_id = #{suppliersId}</if>
+            <if test="totalMoney != null "> and pw.total_money = #{totalMoney}</if>
+            <if test="status != null  and status != ''"> and pw.status = #{status}</if>
+            <if test="proposer != null  and proposer != ''"> and pw.proposer = #{proposer}</if>
+            <if test="operator != null  and operator != ''"> and pw.operator = #{operator}</if>
+            <if test="storageTime != null "> and pw.storage_time = #{storageTime}</if>
+            <if test="1==1">and pw.suppliers_id=hs.supplier_id</if>
+            <if test="sName!=null and sName !=''">and hs.supplier_name like concat('%', #{sName}, '%')</if>
+        </where>
+    </select>
+
+
+
+    <resultMap type="HisSupplier" id="SupplierResult">
+        <result property="supplierId"    column="supplier_id"    />
+        <result property="supplierName"    column="supplier_name"    />
+        <result property="linkMan"    column="link_man"    />
+        <result property="mobile"    column="mobile"    />
+        <result property="phone"    column="phone"    />
+        <result property="account"    column="account"    />
+        <result property="address"    column="address"    />
+        <result property="status"    column="status"    />
+        <!--<result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />-->
+    </resultMap>
+    <select id="selectHisSupplierList" parameterType="HisSupplier" resultMap="SupplierResult">
+        select *from his_supplier
+        <where>
+            <if test="supplierName != null  and supplierName != ''"> and supplier_name like concat('%', #{supplierName}, '%')</if>
+            <if test="linkMan != null  and linkMan != ''"> and link_man = #{linkMan}</if>
+            <if test="mobile != null  and mobile != ''"> and mobile = #{mobile}</if>
+            <if test="phone != null  and phone != ''"> and phone = #{phone}</if>
+            <if test="account != null  and account != ''"> and account = #{account}</if>
+            <if test="address != null  and address != ''"> and address = #{address}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+        </where>
+    </select>
+
+
+    <!--<select id="selectHisPurchasWarehousingById" parameterType="Long" resultMap="HisPurchasWarehousingResult">
+        <include refid="selectHisPurchasWarehousingVo"/>
+        where id = #{id}
+    </select>-->
+    <select id="selectHisPurchasWarehousingById" parameterType="Long" resultMap="HisPurchasWarehousingResult">
+        select hpw.*,hs.supplier_name from his_purchas_warehousing hpw,his_supplier hs
+        where id = #{id}
+    </select>
+
+    <insert id="insertHisPurchasWarehousing" parameterType="HisPurchasWarehousing" useGeneratedKeys="true" keyProperty="id">
+        insert into his_purchas_warehousing
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="billsid != null and billsid != ''">billsID,</if>
+            <if test="suppliersId != null">suppliers_id,</if>
+            <if test="totalMoney != null">total_money,</if>
+            <if test="status != null and status != ''">status,</if>
+            <if test="proposer != null and proposer != ''">proposer,</if>
+            <if test="operator != null and operator != ''">operator,</if>
+            <if test="storageTime != null">storage_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="billsid != null and billsid != ''">#{billsid},</if>
+            <if test="suppliersId != null">#{suppliersId},</if>
+            <if test="totalMoney != null">#{totalMoney},</if>
+            <if test="status != null and status != ''">#{status},</if>
+            <if test="proposer != null and proposer != ''">#{proposer},</if>
+            <if test="operator != null and operator != ''">#{operator},</if>
+            <if test="storageTime != null">#{storageTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateHisPurchasWarehousing" parameterType="HisPurchasWarehousing">
+        update his_purchas_warehousing
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="billsid != null and billsid != ''">billsID = #{billsid},</if>
+            <if test="suppliersId != null">suppliers_id = #{suppliersId},</if>
+            <if test="totalMoney != null">total_money = #{totalMoney},</if>
+            <if test="status != null and status != ''">status = #{status},</if>
+            <if test="proposer != null and proposer != ''">proposer = #{proposer},</if>
+            <if test="operator != null and operator != ''">operator = #{operator},</if>
+            <if test="storageTime != null">storage_time = #{storageTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteHisPurchasWarehousingById" parameterType="Long">
+        delete from his_purchas_warehousing where id = #{id}
+    </delete>
+
+    <delete id="deleteHisPurchasWarehousingByIds" parameterType="String">
+        delete from his_purchas_warehousing where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+
+    <!--查询药品及厂家信息-->
+    <resultMap type="HisMedicine" id="HisMedicineResult">
+        <result property="medicineId"    column="medicine_id"    />
+        <result property="medicineName"    column="medicine_name"    />
+        <result property="medicineNo"    column="medicine_no"    />
+        <result property="factoryId"    column="factory_id"    />
+        <result property="medicineType"    column="medicine_type"    />
+        <result property="prescribe"    column="prescribe"    />
+        <result property="unit"    column="unit"    />
+        <result property="price"    column="price"    />
+        <result property="stock"    column="stock"    />
+        <result property="warn"    column="warn"    />
+        <result property="conversion"    column="conversion"    />
+        <result property="status"    column="status"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="keyword"    column="keyword"    />
+        <association property="factory" javaType="HisFactory">
+            <id property="factoryId" column="factory_id"></id>
+            <result property="factoryName"  column="factory_name"></result>
+        </association>
+    </resultMap>
+    <select id="selectHisMedicineList" parameterType="HisMedicine" resultMap="HisMedicineResult">
+        select hm.*,hf.* from his_medicine hm,his_factory hf
+        <where>
+            <if test="medicineName != null  and medicineName != ''"> and medicine_name like concat('%', #{medicineName}, '%')</if>
+            <if test="medicineNo != null  and medicineNo != ''"> and medicine_no = #{medicineNo}</if>
+            <if test="factoryId != null "> and factory_id = #{factoryId}</if>
+            <if test="medicineType != null  and medicineType != ''"> and medicine_type = #{medicineType}</if>
+            <if test="prescribe != null  and prescribe != ''"> and prescribe = #{prescribe}</if>
+            <if test="unit != null  and unit != ''"> and unit = #{unit}</if>
+            <if test="price != null "> and price = #{price}</if>
+            <if test="stock != null "> and stock = #{stock}</if>
+            <if test="warn != null "> and warn = #{warn}</if>
+            <if test="conversion != null "> and conversion = #{conversion}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="keyword != null  and keyword != ''"> and hm.keyword like concat('%',#{keyword},'%')</if>
+            <if test="1==1">and hm.factory_id=hf.factory_id</if>
+        </where>
+    </select>
+
+
+
+
+
+    <!--增加订单的同时修改库存数据-->
+    <update id="updateHisMedicine" parameterType="HisMedicine">
+        update his_medicine
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="medicineName != null and medicineName != ''">medicine_name = #{medicineName},</if>
+            <if test="medicineNo != null and medicineNo != ''">medicine_no = #{medicineNo},</if>
+            <if test="factoryId != null">factory_id = #{factoryId},</if>
+            <if test="medicineType != null and medicineType != ''">medicine_type = #{medicineType},</if>
+            <if test="prescribe != null and prescribe != ''">prescribe = #{prescribe},</if>
+            <if test="unit != null and unit != ''">unit = #{unit},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="stock != null">stock = #{stock},</if>
+            <if test="warn != null">warn = #{warn},</if>
+            <if test="conversion != null">conversion = #{conversion},</if>
+            <if test="status != null and status != ''">status = #{status},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="keyword != null and keyword != ''">keyword = #{keyword},</if>
+        </trim>
+        where medicine_id = #{medicineId}
+    </update>
+
+
+    <!--根据药品id查询药品-->
+    <select id="selectHisMedicineByMedicineId" parameterType="Long" resultMap="HisMedicineResult">
+        <include refid="selectHisMedicineVo"/>
+        where medicine_id = #{medicineId}
+    </select>
+    <sql id="selectHisMedicineVo">
+        select medicine_id, medicine_name, medicine_no, factory_id, medicine_type, prescribe, unit, price, stock, warn, conversion, status, create_by, create_time, update_by, update_time, keyword from his_medicine
+    </sql>
+</mapper>

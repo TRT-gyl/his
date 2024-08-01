@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.his.mapper.HisDoctorMapper">
+
+    <resultMap type="HisDoctor" id="HisDoctorResult">
+        <result property="doctId" column="doct_id"/>
+        <result property="doctPassword" column="doct_password"/>
+        <result property="doctName" column="doct_name"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="doctPhone" column="doct_phone"/>
+        <result property="doctSex" column="doct_sex"/>
+        <result property="doctAge" column="doct_age"/>
+        <result property="doctLevel" column="doct_level"/>
+        <result property="isOrderwork" column="is_orderwork"/>
+        <result property="doctEducationBg" column="doct_education_bg"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <association property="dept" column="deptId" javaType="hisDept"
+                     resultMap="com.ruoyi.his.mapper.HisDeptMapper.HisDeptResult"/>
+    </resultMap>
+
+    <sql id="selectHisDoctorVo">
+        select doct_id,
+               doct_password,
+               doct_name,
+               dept_id,
+               doct_phone,
+               doct_sex,
+               doct_age,
+               doct_level,
+               is_orderwork,
+               doct_education_bg,
+               create_by,
+               create_time,
+               update_by,
+               update_time
+        from his_doctor
+    </sql>
+
+    <select id="selectHisDoctorList" parameterType="HisDoctor" resultMap="HisDoctorResult">
+        select doct_id,
+        doct_password,
+        doct_name,
+        his_doctor.dept_id,
+        doct_phone,
+        doct_sex,
+        doct_age,
+        doct_level,
+        is_orderwork,
+        doct_education_bg,
+        hd.dept_name,
+        hd.dept_code,
+        hd.dept_num,
+        hd.dept_leader,
+        hd.dept_phone
+        from his_doctor inner join his_dept hd on his_doctor.dept_id = hd.dept_id
+        <where>
+            <if test="doctPassword != null  and doctPassword != ''">and doct_password = #{doctPassword}</if>
+            <if test="doctName != null  and doctName != ''">and doct_name like concat('%', #{doctName}, '%')</if>
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="doctPhone != null ">and doct_phone = #{doctPhone}</if>
+            <if test="doctSex != null  and doctSex != ''">and doct_sex = #{doctSex}</if>
+            <if test="doctAge != null ">and doct_age = #{doctAge}</if>
+            <if test="doctLevel != null  and doctLevel != ''">and doct_level = #{doctLevel}</if>
+            <if test="isOrderwork != null  and isOrderwork != ''">and is_orderwork = #{isOrderwork}</if>
+            <if test="doctEducationBg != null  and doctEducationBg != ''">and doct_education_bg = #{doctEducationBg}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectHisDoctorByDoctId" parameterType="Long" resultMap="HisDoctorResult">
+        <include refid="selectHisDoctorVo"/>
+        where doct_id = #{doctId}
+    </select>
+    <select id="checkPhoneUnique" resultMap="HisDoctorResult">
+        select doct_id, doct_phone
+        from his_doctor
+        where doct_phone = #{phonenumber}
+    </select>
+
+    <insert id="insertHisDoctor" parameterType="HisDoctor">
+        insert into his_doctor
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="doctPassword != null">doct_password,</if>
+            <if test="doctName != null and doctName != ''">doct_name,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="doctPhone != null">doct_phone,</if>
+            <if test="doctSex != null">doct_sex,</if>
+            <if test="doctAge != null">doct_age,</if>
+            <if test="doctLevel != null">doct_level,</if>
+            <if test="isOrderwork != null">is_orderwork,</if>
+            <if test="doctEducationBg != null">doct_education_bg,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="doctId != null">#{doctId},</if>
+            <if test="doctPassword != null">#{doctPassword},</if>
+            <if test="doctName != null and doctName != ''">#{doctName},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="doctPhone != null">#{doctPhone},</if>
+            <if test="doctSex != null">#{doctSex},</if>
+            <if test="doctAge != null">#{doctAge},</if>
+            <if test="doctLevel != null">#{doctLevel},</if>
+            <if test="isOrderwork != null">#{isOrderwork},</if>
+            <if test="doctEducationBg != null">#{doctEducationBg},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateHisDoctor" parameterType="HisDoctor">
+        update his_doctor
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="doctPassword != null">doct_password = #{doctPassword},</if>
+            <if test="doctName != null and doctName != ''">doct_name = #{doctName},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="doctPhone != null">doct_phone = #{doctPhone},</if>
+            <if test="doctSex != null">doct_sex = #{doctSex},</if>
+            <if test="doctAge != null">doct_age = #{doctAge},</if>
+            <if test="doctLevel != null">doct_level = #{doctLevel},</if>
+            <if test="isOrderwork != null">is_orderwork = #{isOrderwork},</if>
+            <if test="doctEducationBg != null">doct_education_bg = #{doctEducationBg},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where doct_id = #{doctId}
+    </update>
+
+    <delete id="deleteHisDoctorByDoctId" parameterType="Long">
+        delete
+        from his_doctor
+        where doct_id = #{doctId}
+    </delete>
+
+    <delete id="deleteHisDoctorByDoctIds" parameterType="String">
+        delete from his_doctor where doct_id in
+        <foreach item="doctId" collection="array" open="(" separator="," close=")">
+            #{doctId}
+        </foreach>
+    </delete>
+</mapper>

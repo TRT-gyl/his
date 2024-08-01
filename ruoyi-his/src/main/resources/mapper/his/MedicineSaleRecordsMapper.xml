@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.his.mapper.MedicineSaleRecordsMapper">
+    
+    <resultMap type="MedicineSaleRecords" id="MedicineSaleRecordsResult">
+        <result property="medicineId"    column="medicine_id"    />
+        <result property="name"    column="medicine_name"    />
+        <result property="price"    column="price"    />
+        <result property="quantity"    column="quantity"    />
+        <result property="amount"    column="amount"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectMedicineSaleRecordsVo">
+        select medicine_id, medicine_name, price, quantity, amount, create_time from medicine_sale_records
+    </sql>
+
+    <select id="selectMedicineSaleRecordsList" parameterType="MedicineSaleRecords" resultMap="MedicineSaleRecordsResult">
+        <include refid="selectMedicineSaleRecordsVo"/>
+        <where>  
+            <if test="medicineId != null "> and medicine_id = #{medicineId}</if>
+            <if test="name != null  and name != ''"> and medicine_name like concat('%', #{name}, '%')</if>
+            <if test="price != null "> and price = #{price}</if>
+            <if test="quantity != null "> and quantity = #{quantity}</if>
+            <if test="amount != null "> and amount = #{amount}</if>
+            <if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
+                and date_format(medicine_sale_records.create_time,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
+            </if>
+            <if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
+                and date_format(medicine_sale_records.create_time,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+            </if>
+        </where>
+    </select>
+
+    <select id="selectMedicineStatisticRecords" parameterType="MedicineSaleRecords" resultMap="MedicineSaleRecordsResult">
+        select medicine_id, medicine_sale_records.medicine_name, sum(quantity) quantity, sum(amount) amount from medicine_sale_records
+        <where>
+            <if test="medicineId != null "> and medicine_id = #{medicineId}</if>
+            <if test="name != null  and name != ''"> and medicine_name like concat('%', #{name}, '%')</if>
+            <if test="price != null "> and price = #{price}</if>
+            <if test="quantity != null "> and quantity = #{quantity}</if>
+            <if test="amount != null "> and amount = #{amount}</if>
+            <if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
+                and date_format(medicine_sale_records.create_time,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
+            </if>
+            <if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
+                and date_format(medicine_sale_records.create_time,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+            </if>
+        </where>
+        group by medicine_id
+    </select>
+    
+    <select id="selectMedicineSaleRecordsByMedicineId" parameterType="Long" resultMap="MedicineSaleRecordsResult">
+        <include refid="selectMedicineSaleRecordsVo"/>
+        where medicine_id = #{medicineId}
+    </select>
+        
+    <insert id="insertMedicineSaleRecords" parameterType="MedicineSaleRecords">
+        insert into medicine_sale_records
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="medicineId != null">medicine_id,</if>
+            <if test="name != null and name != ''">medicine_name,</if>
+            <if test="price != null">price,</if>
+            <if test="quantity != null">quantity,</if>
+            <if test="amount != null">amount,</if>
+            <if test="createTime != null">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="medicineId != null">#{medicineId},</if>
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="price != null">#{price},</if>
+            <if test="quantity != null">#{quantity},</if>
+            <if test="amount != null">#{amount},</if>
+            <if test="createTime != null">#{createTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateMedicineSaleRecords" parameterType="MedicineSaleRecords">
+        update medicine_sale_records
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null and name != ''">medicine_name = #{name},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="quantity != null">quantity = #{quantity},</if>
+            <if test="amount != null">amount = #{amount},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where medicine_id = #{medicineId}
+    </update>
+
+    <delete id="deleteMedicineSaleRecordsByMedicineId" parameterType="Long">
+        delete from medicine_sale_records where medicine_id = #{medicineId}
+    </delete>
+
+    <delete id="deleteMedicineSaleRecordsByMedicineIds" parameterType="String">
+        delete from medicine_sale_records where medicine_id in 
+        <foreach item="medicineId" collection="array" open="(" separator="," close=")">
+            #{medicineId}
+        </foreach>
+    </delete>
+</mapper>

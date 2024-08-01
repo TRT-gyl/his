@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.his.mapper.HisSupplierMapper">
+    <resultMap id="HisSupplierResult" type="HisSupplier">
+        <result property="supplierId" column="supplier_id"/>
+        <result property="supplierName" column="supplier_name"/>
+        <result property="linkMan" column="link_man"/>
+        <result property="mobile" column="mobile"/>
+        <result property="address" column="address"/>
+        <result property="account" column="account"/>
+        <result property="phone" column="phone"/>
+        <result property="status" column="status"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <resultMap id="selectHisPWInSupplier" type="HisPurchasWarehousing">
+        <result property="id" column="id"></result>
+        <result property="suppliersId" column="suppliers_id"></result>
+        <result property="status" column="status"></result>
+    </resultMap>
+
+    <sql id="selectHisSupplierVo">
+        select supplier_id,
+               supplier_name,
+               link_man,
+               mobile,
+               phone,
+               account,
+               status,
+               address,
+               create_time
+        from his_supplier
+    </sql>
+
+    <select id="selectHisSupplierList" parameterType="HisSupplier" resultMap="HisSupplierResult">
+        <include refid="selectHisSupplierVo"/>
+        <where>
+            <if test="supplierName!=null and supplierName!=''">
+                and supplier_name like concat('%',#{supplierName},'%')
+            </if>
+
+            <if test="linkMan!=null and linkMan!=''">
+                and link_man like concat('%',#{linkMan},'%')
+            </if>
+
+            <if test="mobile!=null and mobile!=''">
+                and mobile=#{mobile}
+            </if>
+
+            <if test="status!=null and status!=''">
+                and status=#{status}
+            </if>
+
+
+        </where>
+    </select>
+
+    <select id="selectHisSupplierById" parameterType="Long" resultMap="HisSupplierResult">
+        <include refid="selectHisSupplierVo"></include>
+        where  supplier_id=#{supplierId}
+    </select>
+
+
+    <insert id="insertHisSupplier" parameterType="HisSupplier" useGeneratedKeys="true" keyProperty="supplierId">
+        insert into his_supplier
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="supplierName != null and supplierName != ''">supplier_name,</if>
+            <if test="linkMan != null and linkMan!=''">link_man,</if>
+            <if test="mobile != null and mobile!=''">mobile,</if>
+            <if test="phone != null and phone!=''">phone,</if>
+            <if test="account != null and account!=''">account,</if>
+            <if test="status != null and status!=''">status,</if>
+            <if test="address != null and address!=''">address,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="supplierName != null and supplierName != ''">#{supplierName},</if>
+
+            <if test="linkMan != null and linkMan!=''">#{linkMan},</if>
+            <if test="mobile != null and mobile!=''">#{mobile},</if>
+            <if test="phone != null and phone!=''">#{phone},</if>
+            <if test="account != null and account!=''">#{account},</if>
+            <if test="status != null and status!=''">#{status},</if>
+            <if test="address != null and address!=''">#{address},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateHisSupplier" parameterType="HisSupplier">
+        update his_supplier
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="supplierName != null and supplierName != ''">supplier_name = #{supplierName},</if>
+            <if test="mobile != null and mobile!=''">mobile = #{mobile},</if>
+            <if test="account != null and account!=''">account= #{account},</if>
+            <if test="address != null and address!=''">address = #{address},</if>
+            <if test="status != null and status!=''">status = #{status},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where supplier_id = #{supplierId}
+    </update>
+
+
+    <delete id="deleteHisSupplierBySupplierId" parameterType="Long">
+        delete
+        from his_supplier
+        where supplier_id = #{supplierId}
+    </delete>
+
+    <delete id="deleteHisSupplierBySupplierIds" parameterType="Long">
+        delete from his_supplier where supplier_id in
+        <foreach item="supplierId" collection="array" open="(" separator="," close=")">
+            #{supplierId}
+        </foreach>
+    </delete>
+
+
+    <select id="checkSupplierNameUnique" parameterType="String" resultMap="HisSupplierResult">
+        <include refid="selectHisSupplierVo">
+
+        </include>
+
+        where supplier_name=#{supplierName}
+    </select>
+
+    <select id="selectPwMsg" parameterType="Long" resultMap="selectHisPWInSupplier">
+        select * from  his_purchas_warehousing where  suppliers_id=#{suppliersId}
+    </select>
+
+
+</mapper>
+
+<!--供应商mapper-->

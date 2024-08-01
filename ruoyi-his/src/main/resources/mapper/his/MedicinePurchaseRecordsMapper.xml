@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.his.mapper.MedicinePurchaseRecordsMapper">
+    
+    <resultMap type="MedicinePurchaseRecords" id="MedicinePurchaseRecordsResult">
+        <result property="medicineId"    column="medicine_id"    />
+        <result property="medicineName"    column="medicine_name"    />
+        <result property="totalMoney"    column="total_money"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectMedicinePurchaseRecordsVo">
+        select medicine_id, medicine_name, total_money, create_time from medicine_purchase_records
+    </sql>
+
+    <select id="selectMedicinePurchaseRecordsInPeriod"  resultMap="MedicinePurchaseRecordsResult">
+        select medicine_id, medicine_name, sum(total_money) total_money from medicine_purchase_records
+        <where>
+            <if test="startDate != null and startDate != ''"><!-- 开始时间检索 -->
+                and date_format(medicine_purchase_records.create_time,'%y%m%d') &gt;= date_format(#{startDate},'%y%m%d')
+            </if>
+            <if test="endDate != null and endDate != ''"><!-- 结束时间检索 -->
+                and date_format(medicine_purchase_records.create_time,'%y%m%d') &lt;= date_format(#{endDate},'%y%m%d')
+            </if>
+        </where>
+        group by medicine_id
+    </select>
+
+    <select id="selectMedicinePurchaseRecordsList" parameterType="MedicinePurchaseRecords" resultMap="MedicinePurchaseRecordsResult">
+        <include refid="selectMedicinePurchaseRecordsVo"/>
+        <where>  
+            <if test="medicineId != null "> and medicine_id = #{medicineId}</if>
+            <if test="medicineName != null  and medicineName != ''"> and medicine_name like concat('%', #{medicineName}, '%')</if>
+            <if test="totalMoney != null "> and total_money = #{totalMoney}</if>
+        </where>
+    </select>
+    
+    <select id="selectMedicinePurchaseRecordsByMedicineId" parameterType="Long" resultMap="MedicinePurchaseRecordsResult">
+        <include refid="selectMedicinePurchaseRecordsVo"/>
+        where medicine_id = #{medicineId}
+    </select>
+        
+    <insert id="insertMedicinePurchaseRecords" parameterType="MedicinePurchaseRecords">
+        insert into medicine_purchase_records
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="medicineId != null">medicine_id,</if>
+            <if test="medicineName != null">medicine_name,</if>
+            <if test="totalMoney != null">total_money,</if>
+            <if test="createTime != null">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="medicineId != null">#{medicineId},</if>
+            <if test="medicineName != null">#{medicineName},</if>
+            <if test="totalMoney != null">#{totalMoney},</if>
+            <if test="createTime != null">#{createTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateMedicinePurchaseRecords" parameterType="MedicinePurchaseRecords">
+        update medicine_purchase_records
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="medicineName != null">medicine_name = #{medicineName},</if>
+            <if test="totalMoney != null">total_money = #{totalMoney},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where medicine_id = #{medicineId}
+    </update>
+
+    <delete id="deleteMedicinePurchaseRecordsByMedicineId" parameterType="Long">
+        delete from medicine_purchase_records where medicine_id = #{medicineId}
+    </delete>
+
+    <delete id="deleteMedicinePurchaseRecordsByMedicineIds" parameterType="String">
+        delete from medicine_purchase_records where medicine_id in 
+        <foreach item="medicineId" collection="array" open="(" separator="," close=")">
+            #{medicineId}
+        </foreach>
+    </delete>
+</mapper>

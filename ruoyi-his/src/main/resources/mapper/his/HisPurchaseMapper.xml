@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.his.mapper.HisPurchaseMapper">
+    <!--查询订单并带上药品及药品的生产厂家-->
+    <resultMap type="HisPurchase" id="HisPurchasesResult">
+        <result property="id"    column="id"    />
+        <result property="drugId"    column="drug_id"    />
+        <result property="pwId"    column="pw_id"    />
+        <result property="amount"    column="amount"    />
+        <result property="wholesale"    column="wholesale"    />
+        <result property="totalMoney"    column="total_money"    />
+        <result property="batch"    column="batch"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <association property="hisMedicine" javaType="HisMedicine">
+            <result property="medicineId"    column="medicine_id"    />
+            <result property="medicineName"    column="medicine_name"    />
+            <result property="medicineNo"    column="medicine_no"    />
+            <result property="factoryId"    column="factory_id"    />
+            <result property="medicineType"    column="medicine_type"    />
+            <result property="prescribe"    column="prescribe"    />
+            <result property="unit"    column="unit"    />
+            <result property="price"    column="price"    />
+            <result property="stock"    column="stock"    />
+            <result property="warn"    column="warn"    />
+            <result property="conversion"    column="conversion"    />
+            <result property="status"    column="status"    />
+            <result property="createBy"    column="create_by"    />
+            <result property="createTime"    column="create_time"    />
+            <result property="updateBy"    column="update_by"    />
+            <result property="updateTime"    column="update_time"    />
+            <result property="keyword"    column="keyword"    />
+            <association property="factory" javaType="HisFactory">
+                <id property="factoryId" column="factory_id"></id>
+                <result property="factoryName"  column="factory_name"></result>
+            </association>
+        </association>
+    </resultMap>
+    <select id="selectHisPurchases" parameterType="VoRepertory" resultMap="HisPurchasesResult">
+        select  hp.*,hm.*,hf.factory_id,hf.factory_name,hpw.billsID from his_purchase hp,his_purchas_warehousing hpw,his_medicine hm,his_factory hf
+        <where>
+            <if test="billsid !=null and billsid!=''"> and hpw.billsID like concat('%',#{billsid},'%') </if>
+            <if test="createTimeStart!=null">hp.create_time &gt;= #{createTimeStart} and  hp.create_time &lt;= #{createTimeEnd}</if>
+            <if test="medicineName != null  and medicineName != ''"> and hm.medicine_name like concat('%',#{medicineName},'%')</if>
+            <if test="medicineType != null  and medicineType != ''"> and hm.medicine_type like concat('%',#{medicineType},'%')</if>
+            <if test="prescribe != null  and prescribe != ''"> and hm.prescribe like concat('%',#{prescribe},'%')</if>
+            <if test="pwId !=null and pwId!=''">and hp.pw_id=#{pwId}</if>
+            <if test="1==1">and hp.drug_id=hm.medicine_id</if>
+            <if test="1==1">and hm.factory_id=hf.factory_id</if>
+            <if test="1==1">and hp.pw_id=hpw.id</if>
+        </where>
+    </select>
+
+
+
+    <resultMap type="HisPurchase" id="HisPurchaseResult">
+        <result property="id"    column="id"    />
+        <result property="drugId"    column="drug_id"    />
+        <result property="pwId"    column="pw_id"    />
+        <result property="amount"    column="amount"    />
+        <result property="wholesale"    column="wholesale"    />
+        <result property="totalMoney"    column="total_money"    />
+        <result property="batch"    column="batch"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectHisPurchaseVo">
+        select id, drug_id, pw_id, amount, wholesale, total_money, batch, create_by, create_time, update_by, update_time, remark from his_purchase
+    </sql>
+
+    <select id="selectHisPurchaseList" parameterType="HisPurchase" resultMap="HisPurchaseResult">
+        <include refid="selectHisPurchaseVo"/>
+        <where>
+            <if test="drugId != null "> and drug_id = #{drugId}</if>
+            <if test="pwId != null "> and pw_id = #{pwId}</if>
+            <if test="amount != null "> and amount = #{amount}</if>
+            <if test="wholesale != null "> and wholesale = #{wholesale}</if>
+            <if test="totalMoney != null "> and total_money = #{totalMoney}</if>
+            <if test="batch != null  and batch != ''"> and batch = #{batch}</if>
+        </where>
+    </select>
+
+    <select id="selectHisPurchaseById" parameterType="Long" resultMap="HisPurchaseResult">
+        <include refid="selectHisPurchaseVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertHisPurchase" parameterType="HisPurchase" useGeneratedKeys="true" keyProperty="id">
+        insert into his_purchase
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="drugId != null">drug_id,</if>
+            <if test="pwId != null">pw_id,</if>
+            <if test="amount != null">amount,</if>
+            <if test="wholesale != null">wholesale,</if>
+            <if test="totalMoney != null">total_money,</if>
+            <if test="batch != null and batch != ''">batch,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="drugId != null">#{drugId},</if>
+            <if test="pwId != null">#{pwId},</if>
+            <if test="amount != null">#{amount},</if>
+            <if test="wholesale != null">#{wholesale},</if>
+            <if test="totalMoney != null">#{totalMoney},</if>
+            <if test="batch != null and batch != ''">#{batch},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateHisPurchase" parameterType="HisPurchase">
+        update his_purchase
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="drugId != null">drug_id = #{drugId},</if>
+            <if test="pwId != null">pw_id = #{pwId},</if>
+            <if test="amount != null">amount = #{amount},</if>
+            <if test="wholesale != null">wholesale = #{wholesale},</if>
+            <if test="totalMoney != null">total_money = #{totalMoney},</if>
+            <if test="batch != null and batch != ''">batch = #{batch},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteHisPurchaseById" parameterType="Long">
+        delete from his_purchase where id = #{id}
+    </delete>
+
+    <delete id="deleteHisPurchaseByIds" parameterType="String">
+        delete from his_purchase where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

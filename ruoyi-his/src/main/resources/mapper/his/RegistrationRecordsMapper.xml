@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.his.mapper.RegistrationRecordsMapper">
+    
+    <resultMap type="RegistrationRecords" id="RegistrationRecordsResult">
+        <result property="registrationId"    column="registration_id"    />
+        <result property="doctId"    column="doct_id"    />
+        <result property="doctName"    column="doct_name"    />
+        <result property="regPrice"    column="reg_price"    />
+        <result property="patientName"    column="patient_name"    />
+        <result property="scheduleDate"    column="schedule_date"    />
+    </resultMap>
+
+    <sql id="selectRegistrationRecordsVo">
+        select registration_id, doct_id, doct_name, reg_price, patient_name, schedule_date from registration_records
+    </sql>
+
+    <select id="selectRegistrationRecordsList" parameterType="RegistrationRecords" resultMap="RegistrationRecordsResult">
+        <include refid="selectRegistrationRecordsVo"/>
+        <where>  
+            <if test="registrationId != null "> and registration_id = #{registrationId}</if>
+            <if test="doctId != null "> and doct_id = #{doctId}</if>
+            <if test="doctName != null  and doctName != ''"> and doct_name like concat('%', #{doctName}, '%')</if>
+            <if test="regPrice != null "> and reg_price = #{regPrice}</if>
+            <if test="patientName != null  and patientName != ''"> and patient_name like concat('%', #{patientName}, '%')</if>
+            <if test="scheduleDate != null "> and schedule_date = #{scheduleDate}</if>
+            <if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
+                and date_format(registration_records.schedule_date,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
+            </if>
+            <if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
+                and date_format(registration_records.schedule_date,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+            </if>
+        </where>
+    </select>
+
+    <select id="selectStatisticRecordsList" parameterType="RegistrationRecords" resultMap="RegistrationRecordsResult">
+        select doct_id, ANY_VALUE(doct_name) doct_name, sum(reg_price) reg_price, count(doct_id) totalTimes  from registration_records
+        <where>
+            <if test="registrationId != null "> and registration_id = #{registrationId}</if>
+            <if test="doctId != null "> and doct_id = #{doctId}</if>
+            <if test="doctName != null  and doctName != ''"> and doct_name like concat('%', #{doctName}, '%')</if>
+            <if test="regPrice != null "> and reg_price = #{regPrice}</if>
+            <if test="patientName != null  and patientName != ''"> and patient_name like concat('%', #{patientName}, '%')</if>
+            <if test="scheduleDate != null "> and schedule_date = #{scheduleDate}</if>
+            <if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
+                and date_format(registration_records.schedule_date,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
+            </if>
+            <if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
+                and date_format(registration_records.schedule_date,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+            </if>
+        </where>
+        group by doct_id
+    </select>
+    
+
+</mapper>

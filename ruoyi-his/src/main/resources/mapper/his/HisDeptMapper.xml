@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.his.mapper.HisDeptMapper">
+
+    <resultMap type="HisDept" id="HisDeptResult">
+        <result property="deptId" column="dept_id"/>
+        <result property="deptName" column="dept_name"/>
+        <result property="deptCode" column="dept_code"/>
+        <result property="deptNum" column="dept_num"/>
+        <result property="deptLeader" column="dept_leader"/>
+        <result property="deptPhone" column="dept_phone"/>
+        <result property="status" column="status"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="selectHisDeptVo">
+        select dept_id,
+               dept_name,
+               dept_code,
+               dept_num,
+               dept_leader,
+               dept_phone,
+               status,
+               create_by,
+               create_time,
+               update_by,
+               update_time
+        from his_dept
+    </sql>
+
+    <select id="selectHisDeptList" parameterType="HisDept" resultMap="HisDeptResult">
+        <include refid="selectHisDeptVo"/>
+        <where>
+            <if test="deptName != null  and deptName != ''">and dept_name like concat('%', #{deptName}, '%')</if>
+            <if test="deptCode != null  and deptCode != ''">and dept_code = #{deptCode}</if>
+            <if test="deptNum != null ">and dept_num = #{deptNum}</if>
+            <if test="deptLeader != null  and deptLeader != ''">and dept_leader = #{deptLeader}</if>
+            <if test="deptPhone != null  and deptPhone != ''">and dept_phone = #{deptPhone}</if>
+            <if test="status != null  and status != ''">and status = #{status}</if>
+        </where>
+    </select>
+
+    <select id="selectHisDeptByDeptId" parameterType="Long" resultMap="HisDeptResult">
+        <include refid="selectHisDeptVo"/>
+        where dept_id = #{deptId}
+    </select>
+
+    <insert id="insertHisDept" parameterType="HisDept" useGeneratedKeys="true" keyProperty="deptId">
+        insert into his_dept
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="deptName != null and deptName != ''">dept_name,</if>
+            <if test="deptCode != null and deptCode != ''">dept_code,</if>
+            <if test="deptNum != null">dept_num,</if>
+            <if test="deptLeader != null">dept_leader,</if>
+            <if test="deptPhone != null">dept_phone,</if>
+            <if test="status != null">status,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="deptName != null and deptName != ''">#{deptName},</if>
+            <if test="deptCode != null and deptCode != ''">#{deptCode},</if>
+            <if test="deptNum != null">#{deptNum},</if>
+            <if test="deptLeader != null">#{deptLeader},</if>
+            <if test="deptPhone != null">#{deptPhone},</if>
+            <if test="status != null">#{status},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateHisDept" parameterType="HisDept">
+        update his_dept
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="deptName != null and deptName != ''">dept_name = #{deptName},</if>
+            <if test="deptCode != null and deptCode != ''">dept_code = #{deptCode},</if>
+            <if test="deptNum != null">dept_num = #{deptNum},</if>
+            <if test="deptLeader != null">dept_leader = #{deptLeader},</if>
+            <if test="deptPhone != null">dept_phone = #{deptPhone},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where dept_id = #{deptId}
+    </update>
+
+    <delete id="deleteHisDeptByDeptId" parameterType="Long">
+        delete
+        from his_dept
+        where dept_id = #{deptId}
+    </delete>
+
+    <delete id="deleteHisDeptByDeptIds" parameterType="String">
+        delete from his_dept where dept_id in
+        <foreach item="deptId" collection="array" open="(" separator="," close=")">
+            #{deptId}
+        </foreach>
+    </delete>
+</mapper>
